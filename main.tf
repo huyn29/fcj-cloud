@@ -1,5 +1,5 @@
 locals {
-  project = "FCJ"
+  project = "fcj"
 }
 provider "aws" {
   region = var.region
@@ -39,7 +39,7 @@ resource "tls_private_key" "private_key" {
   algorithm = "RSA"
 }
 resource "local_file" "save_key" {
-  filename        = "ssh_key"
+  filename        = "ssh_key.pem"
   content         = tls_private_key.private_key.private_key_pem
   file_permission = "0400"
 
