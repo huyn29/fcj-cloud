@@ -1,5 +1,5 @@
 locals {
-  project = "FCJ"
+  project = "fcj"
 }
 provider "aws" {
   region = var.region
@@ -39,7 +39,7 @@ resource "tls_private_key" "private_key" {
   algorithm = "RSA"
 }
 resource "local_file" "save_key" {
-  filename        = "ssh_key"
+  filename        = "ssh_key.pem"
   content         = tls_private_key.private_key.private_key_pem
   file_permission = "0400"
 
@@ -59,6 +59,17 @@ resource "aws_instance" "public_instance" {
   security_groups             = [module.aws_vpc.public_sg_id]
   associate_public_ip_address = true
   key_name                    = aws_key_pair.key_pair.id
+  
+  provisioner "file" {
+    source = "ssh_key.pem"
+    destination = "/home/ec2-user"
+    connection {
+      type = "ssh"
+      user = "ec2-user"
+      private_key = file("ssh_key.pem")
+      host = self.public_ip
+    }
+  }
   tags = {
     "Name" = "${local.project}-public-instance"
   }
@@ -67,7 +78,7 @@ resource "aws_instance" "private_instance" {
   ami                         = data.aws_ami.ami_amazon_linux.id
   instance_type               = "t2.micro"
   subnet_id                   = module.aws_vpc.private_subnet[1]
-  security_groups             = [module.aws_vpc.public_sg_id]
+  security_groups             = [module.aws_vpc.private_sg_id]
   associate_public_ip_address = false
   key_name                    = aws_key_pair.key_pair.id
   tags = {

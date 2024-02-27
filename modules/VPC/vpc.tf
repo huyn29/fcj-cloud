@@ -23,7 +23,7 @@ resource "aws_subnet" "private_subnet" {
   cidr_block        = var.private_subnet_list[count.index]
   availability_zone = var.availability_zone_list[count.index]
   tags = {
-    "Name" = "${var.aws_project_str}-private-subnet-${count.index}}"
+    "Name" = "${var.aws_project_str}-private-subnet-${count.index}"
   }
 }
 # AWS INTERNET GATEWAY
@@ -76,9 +76,9 @@ resource "aws_route_table" "rtb_private" {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat_gw.id
   }
-  # route {
-
-  # }
+  tags = {
+    "Name" = "${var.aws_project_str}-private-rtb"
+  }
 }
 resource "aws_route_table_association" "private_subnet_association" {
   for_each       = { for k, v in aws_subnet.private_subnet : k => v }
