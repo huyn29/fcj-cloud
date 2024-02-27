@@ -76,9 +76,6 @@ resource "aws_route_table" "rtb_private" {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat_gw.id
   }
-  # route {
-
-  # }
   tags = {
     "Name" = "${var.aws_project_str}-private-rtb"
   }
